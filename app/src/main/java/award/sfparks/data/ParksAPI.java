@@ -13,6 +13,6 @@ public interface ParksAPI {
 
         String ENDPOINT = "https://data.sfgov.org/";
 
-        @GET("resource/z76i-7s65.json")
+        @GET("/resource/z76i-7s65.json")
         Observable<List<ParkInfo>> getSFParkList();
 }

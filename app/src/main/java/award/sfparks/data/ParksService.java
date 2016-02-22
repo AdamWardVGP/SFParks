@@ -21,7 +21,6 @@ public class ParksService {
     public Observable<List<ParkInfo>> getSFParks() {
         return parksAPI
                 .getSFParkList()
-                .skip(1) //first entry contains row headers and can be skipped
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
