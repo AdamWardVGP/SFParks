@@ -8,7 +8,7 @@ import award.sfparks.model.ParkInfo;
 
 public class LocationComparator implements Comparator<ParkInfo> {
 
-    private Location userLocation;
+    private final Location userLocation;
     public LocationComparator(Location location) {
         this.userLocation = location;
     }

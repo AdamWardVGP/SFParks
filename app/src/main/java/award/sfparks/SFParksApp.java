@@ -25,6 +25,7 @@ public class SFParksApp extends Application {
         applicationComponent = DaggerAppComponent.builder()
                 .networkModule(new NetworkModule())
                 .presenterModule(new PresenterModule())
+                .servicesModule(new ServicesModule(this))
                 .build();
     }
 

@@ -1,13 +1,7 @@
 package award.sfparks.presenter;
 
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Looper;
-import android.support.v4.content.ContextCompat;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,20 +11,25 @@ import award.sfparks.model.ParkInfo;
 import award.sfparks.presenter.interfaces.ParkPresenter;
 import award.sfparks.util.Constants;
 import award.sfparks.util.LocationComparator;
+import award.sfparks.util.LocationService;
 import award.sfparks.view.ParkListView;
 import rx.Subscriber;
 
 
-public class ParkPresenterImpl implements ParkPresenter {
+public class ParkPresenterImpl implements ParkPresenter, LocationService.LocationCallbacks {
 
-    private ParksService parksService;
+    private final ParksService parksService;
+    private final LocationService locationService;
+
     private ParkListView view;
-    private List<ParkInfo> parkList;
-    private Location userLocaiton;
 
-    public ParkPresenterImpl(ParksService parksService) {
+    private List<ParkInfo> parkList;
+    private Location userLocation;
+
+    public ParkPresenterImpl(ParksService parksService, LocationService locationService) {
         this.parksService = parksService;
-        getUserLocation();
+        this.locationService = locationService;
+        locationService.setListener(this);
     }
 
     @Override
@@ -39,7 +38,7 @@ public class ParkPresenterImpl implements ParkPresenter {
     }
 
     @Override
-    public void detatchView() {
+    public void detachView() {
         this.view = null;
     }
 
@@ -48,6 +47,8 @@ public class ParkPresenterImpl implements ParkPresenter {
         if (view != null) {
             view.showProgress();
         }
+
+        locationService.getLocation();
 
         parksService.getSFParks().subscribe(new Subscriber<List<ParkInfo>>() {
             @Override
@@ -63,27 +64,57 @@ public class ParkPresenterImpl implements ParkPresenter {
             }
 
             @Override
-            public void onNext(List<ParkInfo> parkInfos) {
+            public void onNext(List<ParkInfo> parkList) {
                 if (view != null) {
-                    parkList = parkInfos;
+                    ParkPresenterImpl.this.parkList = parkList;
                     joinNetAndLocationRequests();
                 }
             }
         });
     }
 
-    private void getUserLocation() {
-        //placeholder location
-        userLocaiton = new Location("");
-        userLocaiton.setLongitude(Constants.DEFAULT_LOCATION_LONGITUDE);
-        userLocaiton.setLatitude(Constants.DEFAULT_LOCATION_LATITUDE);
+    @Override
+    public void LocationPermissionUpdate(boolean granted) {
+        if (granted) {
+            locationService.getLocation();
+        } else {
+            useStubLocation();
+            joinNetAndLocationRequests();
+        }
     }
 
     private void joinNetAndLocationRequests() {
-        if(parkList != null && userLocaiton != null) {
-            ParkSort sorter = new ParkSort(userLocaiton);
+        if (parkList != null && userLocation != null) {
+            ParkSort sorter = new ParkSort(userLocation);
             sorter.execute(parkList);
         }
+    }
+
+    private void useStubLocation() {
+        //placeholder location
+        userLocation = new Location("");
+        userLocation.setLongitude(Constants.DEFAULT_LOCATION_LONGITUDE);
+        userLocation.setLatitude(Constants.DEFAULT_LOCATION_LATITUDE);
+    }
+
+    @Override
+    public void permissionNotGranted() {
+        if (view != null)
+            view.requestPermissions();
+    }
+
+    @Override
+    public void noProviderAvailable() {
+        useStubLocation();
+        locationService.clearListener();
+        joinNetAndLocationRequests();
+    }
+
+    @Override
+    public void locationUpdate(Location location) {
+        userLocation = location;
+        locationService.clearListener();
+        joinNetAndLocationRequests();
     }
 
     private class ParkSort extends AsyncTask<List<ParkInfo>, Void, List<ParkInfo>> {
@@ -95,15 +126,15 @@ public class ParkPresenterImpl implements ParkPresenter {
         }
 
         @Override
-        protected List<ParkInfo> doInBackground(List<ParkInfo> ... locationList) {
-            Collections.sort(locationList[0],new LocationComparator(location));
+        protected List<ParkInfo> doInBackground(List<ParkInfo>... locationList) {
+            Collections.sort(locationList[0], new LocationComparator(location));
             return locationList[0];
         }
 
         @Override
-        protected void onPostExecute(List<ParkInfo> infos) {
-            if(view != null) {
-                view.showParkList(infos);
+        protected void onPostExecute(List<ParkInfo> parkInfoList) {
+            if (view != null) {
+                view.showParkList(parkInfoList);
             }
         }
     }

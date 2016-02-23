@@ -8,4 +8,5 @@ public interface ParkListView {
     void showParkList(List<ParkInfo> parks);
     void showError();
     void showProgress();
+    void requestPermissions();
 }

@@ -8,7 +8,9 @@ public interface ParkPresenter {
 
     void attachView(ParkListView view);
 
-    void detatchView();
+    void detachView();
 
     void getParksList();
+
+    void LocationPermissionUpdate(boolean granted);
 }

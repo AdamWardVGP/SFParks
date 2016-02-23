@@ -1,5 +1,8 @@
 package award.sfparks;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements ParkListView {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        presenter.detatchView();
+        presenter.detachView();
     }
 
     @Override
@@ -87,6 +90,26 @@ public class MainActivity extends AppCompatActivity implements ParkListView {
         offlineLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
+    }
+
+    static final int LOCATION_REQ_CODE = 0x0;
+
+    @Override
+    public void requestPermissions() {
+        ActivityCompat.requestPermissions(this,
+            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+            LOCATION_REQ_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_REQ_CODE:
+                presenter.LocationPermissionUpdate(grantResults[0] == PackageManager.PERMISSION_GRANTED);
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @OnClick(R.id.button_try_again)
