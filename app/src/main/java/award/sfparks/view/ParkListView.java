@@ -6,5 +6,6 @@ import award.sfparks.model.ParkInfo;
 
 public interface ParkListView {
     void showParkList(List<ParkInfo> parks);
-    void onParkFetchError();
+    void showError();
+    void showProgress();
 }

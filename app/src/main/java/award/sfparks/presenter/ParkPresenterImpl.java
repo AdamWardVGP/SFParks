@@ -32,6 +32,9 @@ public class ParkPresenterImpl implements ParkPresenter {
 
     @Override
     public void getParksList() {
+        if (view != null) {
+            view.showProgress();
+        }
         parksService.getSFParks().subscribe(new Subscriber<List<ParkInfo>>() {
             @Override
             public void onCompleted() {
@@ -40,12 +43,16 @@ public class ParkPresenterImpl implements ParkPresenter {
 
             @Override
             public void onError(Throwable e) {
-
+                if(view != null) {
+                    view.showError();
+                }
             }
 
             @Override
             public void onNext(List<ParkInfo> parkInfos) {
-                view.showParkList(parkInfos);
+                if(view != null) {
+                    view.showParkList(parkInfos);
+                }
             }
         });
     }

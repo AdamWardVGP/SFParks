@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <!-- primary -->
+    <color name="sfp_green">#23bc00</color>
+    <color name="sfp_green_lighter">#6ee453</color>
+    <color name="sfp_green_dark">#157400</color>
+
+    <!-- greyscale -->
+    <color name="black">#000000</color>
+    <color name="grey_82">#D4D4D4</color>
+    <color name="grey_91">#E9E9E9</color>
+    <color name="grey_97">#FAFAFA</color>
+    <color name="white">#FFFFFF</color>
 </resources>

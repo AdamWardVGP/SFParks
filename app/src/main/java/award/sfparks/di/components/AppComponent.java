@@ -8,9 +8,7 @@ import award.sfparks.di.modules.PresenterModule;
 import dagger.Component;
 
 @Singleton
-@Component (
-        modules = { NetworkModule.class, PresenterModule.class}
-)
+@Component (modules = { NetworkModule.class, PresenterModule.class})
 public interface AppComponent {
     void inject(MainActivity activity);
 }
