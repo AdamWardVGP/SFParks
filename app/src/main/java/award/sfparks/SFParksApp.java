@@ -6,6 +6,8 @@ import android.content.Context;
 import award.sfparks.di.components.AppComponent;
 import award.sfparks.di.components.DaggerAppComponent;
 import award.sfparks.di.modules.NetworkModule;
+import award.sfparks.di.modules.PresenterModule;
+import award.sfparks.di.modules.ServicesModule;
 
 /**
  * Custom application object
@@ -22,6 +24,7 @@ public class SFParksApp extends Application {
 
         applicationComponent = DaggerAppComponent.builder()
                 .networkModule(new NetworkModule())
+                .presenterModule(new PresenterModule())
                 .build();
     }
 
